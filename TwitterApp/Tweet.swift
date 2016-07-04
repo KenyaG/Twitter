@@ -18,17 +18,22 @@ class Tweet: NSObject {
     var atName: String?
     var name: String?
     var id: NSNumber?
+    var idStr: String?
+   // var followingCount: Int?
+    var innerTweet: Tweet?
     
     //create initializer
     init(dictionary: NSDictionary) {
         text = dictionary["text"] as? String
-        
         retweetCount = (dictionary["retweet_count"] as? Int) ?? 0
-        favoritesCount = (dictionary["favorites_count"] as? Int) ?? 0
-        profilePic = (dictionary["user"]?["profile_image_url_https"] as? String)
+        favoritesCount = (dictionary["favorite_count"] as? Int) ?? 0
+        profilePic = (dictionary["user"]?["profile_image_url_https"] as?    String)
+        
+       // followingCount = (dictionary["user"]? ["followers_count"]) as? Int
         atName = (dictionary["user"]? ["screen_name"] as? String)
         name = (dictionary["user"]? ["name"] as? String)
         id = (dictionary["id"] as? Int)
+        idStr = (dictionary["id_str"] as? String)
         
        let timestampString = dictionary["created_at"] as? String
         
@@ -36,13 +41,18 @@ class Tweet: NSObject {
             let formatter = NSDateFormatter()
             formatter.dateFormat = "EEE MMM d HH:mm:ss Z y"
             timestamp = formatter.dateFromString(timestampString)
+            formatter.stringFromDate(timestamp!)
         }
         
+        // check if this tweet contains an inner tweet
+        if let innerDictionary = dictionary["retweeted_status"] as? NSDictionary {
+            // construct a new Tweet from the inner tweet
+            innerTweet = Tweet(dictionary: innerDictionary)
+        }
+
+        
     }
-    
-    
-    
-    
+   
     //this function is going to return an array of tweets
     class func tweetsWithArray(dictionaries: [NSDictionary]) -> [Tweet] {
        //create an array of tweets //an empty array

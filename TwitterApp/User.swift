@@ -19,6 +19,7 @@ class User: NSObject {
     var dictionary: NSDictionary?
     var idStr : String?
     var userId: Int?
+    //var followersCount: Int?
     //create an initalizer
     //takes in dictionary so that can take info from the dict.
     init(dictionary: NSDictionary) {
@@ -31,6 +32,7 @@ class User: NSObject {
         name = dictionary["name"] as? String
         screenname = dictionary["screen_name"] as? String
         idStr = dictionary["id_str"] as? String
+        //followersCount = dictionary["friends_count"] as? Int
        
         //defaultProfileImage = dictionary["default_profile_image"] as? String
         let profileUrlString = dictionary["default_profile_image"] as? String

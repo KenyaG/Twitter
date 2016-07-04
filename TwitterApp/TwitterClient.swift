@@ -44,7 +44,7 @@ class TwitterClient: BDBOAuth1SessionManager {
     
     }
     
-    func logout(){
+        func logout(){
         
         User.currentUser = nil
         deauthorize()
@@ -117,18 +117,38 @@ class TwitterClient: BDBOAuth1SessionManager {
         
     }
     
-    func reTweet(id: NSString, success:([Tweet]) -> (), failure: (NSError) -> ()){
+    func reTweet(id: String, retweetWorkedCallback:(Tweet) -> Void, retweetDidntWorkCallback: (NSError) -> Void){
         
-            POST("1.1/statuses/retweet/\(id).json", parameters: id, success: { (task: NSURLSessionDataTask, response: AnyObject?) in
+            POST("1.1/statuses/retweet/\(id).json", parameters: nil, success: { (task: NSURLSessionDataTask, response: AnyObject?) in
             
                     print("I retweeted the status!")
-            
-                }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
+                let tweetDictionary = response as! NSDictionary
+                let retweet = Tweet(dictionary: tweetDictionary)
                 
-                    failure(error)
-        })
+                retweetWorkedCallback(retweet)
+                
+                
+                }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
+                    retweetDidntWorkCallback(error)
+            })
     
     }
+    
+    func favorite(id: String, success: (Tweet) -> Void, failure: (NSError) -> Void) {
+        let params = ["id" : id]
+        
+        POST("1.1/favorites/create.json", parameters: params, success: {(task: NSURLSessionDataTask,response: AnyObject?) in
+        
+        let favoriteDictionary = response as! NSDictionary
+        let favorite = Tweet(dictionary: favoriteDictionary)
+        
+            success(favorite)
+            }, failure:{ (task: NSURLSessionDataTask?, error: NSError) -> Void in
+                failure(error)
+        })
+    }
+    
+    
     
     func currentAccount(success: (User) -> (), failure: (NSError) -> ()){
     
